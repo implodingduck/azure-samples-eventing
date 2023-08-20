@@ -10,7 +10,7 @@ resource "azurerm_eventhub_namespace" "this" {
 
 resource "azurerm_eventhub" "this" {
   name                = "eh-${local.func_name}}"
-  namespace_name      = azurerm_eventhub_namespace.rg.name
+  namespace_name      = azurerm_eventhub_namespace.this.name
   resource_group_name = azurerm_resource_group.rg.name
   partition_count     = 1
   message_retention   = 1

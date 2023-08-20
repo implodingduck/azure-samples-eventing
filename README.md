@@ -1,7 +1,4 @@
-# base-repo
-Please setup the following secrets:
+# Azure Samples
+## Eventing and Messaging
 
-* AZURE_CLIENT_ID
-* AZURE_SUBSCRIPTION_ID
-* AZURE_TENANT_ID
-* KV_NAME
+![implementation architecture diagram with event grid, event hub and service bus](eventing-architecture.png)

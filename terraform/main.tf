@@ -58,3 +58,86 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
   tags = local.tags
 }
+
+
+resource "azurerm_application_insights" "app" {
+  name                = "${local.func_name}-insights"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  application_type    = "other"
+  workspace_id        = data.azurerm_log_analytics_workspace.default.id
+}
+
+resource "azurerm_service_plan" "asp" {
+  name                = "asp-${local.func_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  os_type             = "Linux"
+  sku_name            = "Y1"
+}
+
+resource "azurerm_linux_function_app" "func" {
+
+  name                       = local.func_name
+  resource_group_name        = azurerm_resource_group.rg.name
+  location                   = azurerm_resource_group.rg.location
+  service_plan_id            = azurerm_service_plan.asp.id
+  storage_account_name       = azurerm_storage_account.this.name
+  storage_account_access_key = azurerm_storage_account.this.primary_access_key
+
+  site_config {
+    application_insights_key = azurerm_application_insights.app.instrumentation_key
+    application_insights_connection_string = azurerm_application_insights.app.connection_string
+    application_stack {
+      node_version = "18"
+    }
+    
+  }
+  identity {
+    type         = "SystemAssigned"
+  }
+  app_settings = {
+    "ENABLE_ORYX_BUILD"               = "true"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"  = "1"
+    "WEBSITE_MOUNT_ENABLED"           = "1"
+    "EHCONN__fullyQualifiedNamespace" = "${azurerm_eventhub_namespace.this.name}.servicebus.windows.net" 
+    "EHNAME"                          = azurerm_eventhub.this.name
+    "SBCONN__fullyQualifiedNamespace" = azurerm_servicebus_namespace.this.endpoint
+    "SBTOPIC"                         = azurerm_servicebus_topic.this.name
+    "SBSUB"                           = "topic-sub-${local.func_name}"
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
+
+}
+
+resource "local_file" "localsettings" {
+    content     = <<-EOT
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsStorage": ""
+  }
+}
+EOT
+    filename = "../func/local.settings.json"
+}
+
+resource "null_resource" "publish_func" {
+  depends_on = [
+    azurerm_linux_function_app.func,
+    local_file.localsettings
+  ]
+  triggers = {
+    index = "${timestamp()}" #"2023-02-22T19:56:24Z" #"${timestamp()}"
+  }
+  provisioner "local-exec" {
+    working_dir = "../func"
+    command     = "npm install && timeout 10m func azure functionapp publish ${azurerm_linux_function_app.func.name}"
+    
+  }
+}

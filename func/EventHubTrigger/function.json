@@ -4,11 +4,18 @@
       "type": "eventHubTrigger",
       "name": "eventHubMessages",
       "direction": "in",
-      "eventHubName": "samples-workitems",
-      "connection": "",
+      "eventHubName": "%EHNAME%",
+      "connection": "EHCONN",
       "cardinality": "many",
       "consumerGroup": "$Default",
       "dataType": "string"
-    }
+    },
+    {
+      "name": "outputSbQueue",
+      "type": "serviceBus",
+      "topicName": "%SBTOPIC%",
+      "connection": "SBCONN",
+      "direction": "out"
+  }
   ]
 }

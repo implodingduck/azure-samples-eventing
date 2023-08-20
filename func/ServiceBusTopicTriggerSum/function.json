@@ -4,9 +4,9 @@
       "name": "mySbMsg",
       "type": "serviceBusTrigger",
       "direction": "in",
-      "topicName": "mytopic",
-      "subscriptionName": "mysubscription",
-      "connection": ""
+      "topicName": "%SBTOPIC%",
+      "subscriptionName": "%SBSUB%-sum",
+      "connection": "SBCONN"
     }
   ]
 }

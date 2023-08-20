@@ -141,3 +141,21 @@ resource "null_resource" "publish_func" {
     
   }
 }
+
+resource "azurerm_role_assignment" "storage" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
+}
+
+resource "azurerm_role_assignment" "eventhub" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "Azure Event Hubs Data Owner"
+  principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
+}
+
+resource "azurerm_role_assignment" "servicebus" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "Azure Service Bus Data Owner"
+  principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
+}

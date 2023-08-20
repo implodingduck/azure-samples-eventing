@@ -14,8 +14,7 @@ module.exports = async function (context, req) {
         }
     ]
 
-    context.bindings.outputSbTopic = message[0];
-    context.bindings.outputSbTopic = message[1];
+    context.bindings.outputSbTopic = message;
     context.res = {
         // status: 200, /* Defaults to 200 */
         body: message

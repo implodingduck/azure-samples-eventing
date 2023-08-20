@@ -130,35 +130,35 @@ EOT
     filename = "../func/local.settings.json"
 }
 
-resource "null_resource" "publish_func" {
-  depends_on = [
-    azurerm_linux_function_app.func,
-    local_file.localsettings
-  ]
-  triggers = {
-    index = "${timestamp()}" #"2023-02-22T19:56:24Z" #"${timestamp()}"
-  }
-  provisioner "local-exec" {
-    working_dir = "../func"
-    command     = "npm install && timeout 10m func azure functionapp publish ${azurerm_linux_function_app.func.name}"
+# resource "null_resource" "publish_func" {
+#   depends_on = [
+#     azurerm_linux_function_app.func,
+#     local_file.localsettings
+#   ]
+#   triggers = {
+#     index = "${timestamp()}" #"2023-02-22T19:56:24Z" #"${timestamp()}"
+#   }
+#   provisioner "local-exec" {
+#     working_dir = "../func"
+#     command     = "npm install && timeout 10m func azure functionapp publish ${azurerm_linux_function_app.func.name}"
     
-  }
-}
+#   }
+# }
 
-resource "azurerm_role_assignment" "storage" {
-  scope                = azurerm_resource_group.rg.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
-}
+# resource "azurerm_role_assignment" "storage" {
+#   scope                = azurerm_resource_group.rg.id
+#   role_definition_name = "Storage Blob Data Contributor"
+#   principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
+# }
 
-resource "azurerm_role_assignment" "eventhub" {
-  scope                = azurerm_resource_group.rg.id
-  role_definition_name = "Azure Event Hubs Data Owner"
-  principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
-}
+# resource "azurerm_role_assignment" "eventhub" {
+#   scope                = azurerm_resource_group.rg.id
+#   role_definition_name = "Azure Event Hubs Data Owner"
+#   principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
+# }
 
-resource "azurerm_role_assignment" "servicebus" {
-  scope                = azurerm_resource_group.rg.id
-  role_definition_name = "Azure Service Bus Data Owner"
-  principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
-}
+# resource "azurerm_role_assignment" "servicebus" {
+#   scope                = azurerm_resource_group.rg.id
+#   role_definition_name = "Azure Service Bus Data Owner"
+#   principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
+# }

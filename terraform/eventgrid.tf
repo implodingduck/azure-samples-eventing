@@ -11,4 +11,7 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "this" {
   system_topic         = azurerm_eventgrid_system_topic.this.name
   resource_group_name  = azurerm_resource_group.rg.name
   eventhub_endpoint_id = azurerm_eventhub.this.id
+  included_event_types = [
+    "Microsoft.Storage.BlobCreated"
+  ]
 }

@@ -11,11 +11,11 @@
       "dataType": "string"
     },
     {
-      "name": "outputSbQueue",
+      "name": "outputSbTopic",
       "type": "serviceBus",
       "topicName": "%SBTOPIC%",
       "connection": "SBCONN",
       "direction": "out"
-  }
+    }
   ]
 }

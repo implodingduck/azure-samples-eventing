@@ -1,12 +1,10 @@
 resource "azurerm_servicebus_namespace" "this" {
   name                = "sbn-${local.func_name}"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
   sku                 = "Basic"
 
-  tags = {
-    source = "terraform"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_servicebus_topic" "this" {

@@ -102,9 +102,12 @@ resource "azurerm_linux_function_app" "func" {
     "WEBSITE_MOUNT_ENABLED"           = "1"
     "EHCONN__fullyQualifiedNamespace" = "${azurerm_eventhub_namespace.this.name}.servicebus.windows.net" 
     "EHNAME"                          = azurerm_eventhub.this.name
+    "%EHNAME%"                        = azurerm_eventhub.this.name
     "SBCONN__fullyQualifiedNamespace" = "${azurerm_servicebus_namespace.this.name}.servicebus.windows.net" 
     "SBTOPIC"                         = azurerm_servicebus_topic.this.name
+    "%SBTOPIC%"                       = azurerm_servicebus_topic.this.name
     "SBSUB"                           = "topic-sub-${local.func_name}"
+    "%SBSUB%"                         = "topic-sub-${local.func_name}"
   }
   lifecycle {
     ignore_changes = [

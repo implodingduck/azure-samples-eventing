@@ -16,7 +16,7 @@
       "name": "res"
     },
     {
-      "name": "outputSbQueue",
+      "name": "outputSbTopic",
       "type": "serviceBus",
       "topicName": "%SBTOPIC%",
       "connection": "SBCONN",

@@ -76,46 +76,46 @@ resource "azurerm_service_plan" "asp" {
   sku_name            = "Y1"
 }
 
-# resource "azurerm_linux_function_app" "func" {
+resource "azurerm_linux_function_app" "func" {
 
-#   name                       = local.func_name
-#   resource_group_name        = azurerm_resource_group.rg.name
-#   location                   = azurerm_resource_group.rg.location
-#   service_plan_id            = azurerm_service_plan.asp.id
-#   storage_account_name       = azurerm_storage_account.this.name
-#   storage_account_access_key = azurerm_storage_account.this.primary_access_key
+  name                       = local.func_name
+  resource_group_name        = azurerm_resource_group.rg.name
+  location                   = azurerm_resource_group.rg.location
+  service_plan_id            = azurerm_service_plan.asp.id
+  storage_account_name       = azurerm_storage_account.this.name
+  storage_account_access_key = azurerm_storage_account.this.primary_access_key
 
-#   site_config {
-#     application_insights_key = azurerm_application_insights.app.instrumentation_key
-#     application_insights_connection_string = azurerm_application_insights.app.connection_string
-#     application_stack {
-#       node_version = "18"
-#     }
+  site_config {
+    application_insights_key = azurerm_application_insights.app.instrumentation_key
+    application_insights_connection_string = azurerm_application_insights.app.connection_string
+    application_stack {
+      node_version = "18"
+    }
     
-#   }
-#   identity {
-#     type         = "SystemAssigned"
-#   }
-#   app_settings = {
-#     "ENABLE_ORYX_BUILD"               = "true"
-#     "SCM_DO_BUILD_DURING_DEPLOYMENT"  = "1"
-#     "WEBSITE_MOUNT_ENABLED"           = "1"
-#     "EHCONN__fullyQualifiedNamespace" = "${azurerm_eventhub_namespace.this.name}.servicebus.windows.net" 
-#     "EHNAME"                          = azurerm_eventhub.this.name
-#     "%EHNAME%"                        = azurerm_eventhub.this.name
-#     "SBCONN__fullyQualifiedNamespace" = "${azurerm_servicebus_namespace.this.name}.servicebus.windows.net" 
-#     "SBTOPIC"                         = azurerm_servicebus_topic.this.name
-#     "%SBTOPIC%"                       = azurerm_servicebus_topic.this.name
-#     "SBSUB"                           = "topic-sub-${local.func_name}"
-#     "%SBSUB%"                         = "topic-sub-${local.func_name}"
-#   }
-#   lifecycle {
-#     ignore_changes = [
-#       tags
-#     ]
-#   }
+  }
+  identity {
+    type         = "SystemAssigned"
+  }
+  app_settings = {
+    "ENABLE_ORYX_BUILD"               = "true"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"  = "1"
+    "WEBSITE_MOUNT_ENABLED"           = "1"
+    "EHCONN__fullyQualifiedNamespace" = "${azurerm_eventhub_namespace.this.name}.servicebus.windows.net" 
+    "EHNAME"                          = azurerm_eventhub.this.name
+    "%EHNAME%"                        = azurerm_eventhub.this.name
+    "SBCONN__fullyQualifiedNamespace" = "${azurerm_servicebus_namespace.this.name}.servicebus.windows.net" 
+    "SBTOPIC"                         = azurerm_servicebus_topic.this.name
+    "%SBTOPIC%"                       = azurerm_servicebus_topic.this.name
+    "SBSUB"                           = "topic-sub-${local.func_name}"
+    "%SBSUB%"                         = "topic-sub-${local.func_name}"
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 
-# }
+}
 
 resource "local_file" "localsettings" {
     content     = <<-EOT
@@ -130,35 +130,35 @@ EOT
     filename = "../func/local.settings.json"
 }
 
-# resource "null_resource" "publish_func" {
-#   depends_on = [
-#     azurerm_linux_function_app.func,
-#     local_file.localsettings
-#   ]
-#   triggers = {
-#     index = "${timestamp()}" #"2023-02-22T19:56:24Z" #"${timestamp()}"
-#   }
-#   provisioner "local-exec" {
-#     working_dir = "../func"
-#     command     = "npm install && timeout 10m func azure functionapp publish ${azurerm_linux_function_app.func.name}"
+resource "null_resource" "publish_func" {
+  depends_on = [
+    azurerm_linux_function_app.func,
+    local_file.localsettings
+  ]
+  triggers = {
+    index = "${timestamp()}" #"2023-02-22T19:56:24Z" #"${timestamp()}"
+  }
+  provisioner "local-exec" {
+    working_dir = "../func"
+    command     = "npm install && timeout 10m func azure functionapp publish ${azurerm_linux_function_app.func.name}"
     
-#   }
-# }
+  }
+}
 
-# resource "azurerm_role_assignment" "storage" {
-#   scope                = azurerm_resource_group.rg.id
-#   role_definition_name = "Storage Blob Data Contributor"
-#   principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
-# }
+resource "azurerm_role_assignment" "storage" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
+}
 
-# resource "azurerm_role_assignment" "eventhub" {
-#   scope                = azurerm_resource_group.rg.id
-#   role_definition_name = "Azure Event Hubs Data Owner"
-#   principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
-# }
+resource "azurerm_role_assignment" "eventhub" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "Azure Event Hubs Data Owner"
+  principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
+}
 
-# resource "azurerm_role_assignment" "servicebus" {
-#   scope                = azurerm_resource_group.rg.id
-#   role_definition_name = "Azure Service Bus Data Owner"
-#   principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
-# }
+resource "azurerm_role_assignment" "servicebus" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "Azure Service Bus Data Owner"
+  principal_id         = azurerm_linux_function_app.func.identity.0.principal_id  
+}

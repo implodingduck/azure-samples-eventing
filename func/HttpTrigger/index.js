@@ -49,7 +49,6 @@ module.exports = async function (context, req) {
     const containerClient = await blobServiceClient.getContainerClient("upload");
     const blobClient = containerClient.getBlobClient(blobName);
     const downloadResponse = await blobClient.download();
-    context.log(downloadResponse)
     const downloaded = await streamToBuffer(downloadResponse.readableStreamBody, context);
     const blobcontent = downloaded.toString()
     context.log(`Downloaded blob content: ${blobcontent}`);
@@ -57,12 +56,22 @@ module.exports = async function (context, req) {
         delimiter: ',',
         skip_empty_lines: true
       })
+    const messages = []
+    await records.forEach(async (record, index) => {
+        context.log(`Record: ${record}`);
+        messages.push({
+            "v1": record[0],
+            "v2": record[1],
+            "operation": record[2]
+        })
+    })
     
     context.res = {
         // status: 200, /* Defaults to 200 */
         body: {
                 "servicebusmessage": message,
-                "blobcontent": records
+                "blobcontent": records,
+                "messages": messages
         }
     };
 }

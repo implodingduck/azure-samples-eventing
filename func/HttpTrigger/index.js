@@ -42,7 +42,7 @@ module.exports = async function (context, req) {
         }
     ]
 
-    context.bindings.outputSbTopic = message;
+    
     
     const blobName = "sample.csv"
     context.log(`Downloading ${blobName}`);
@@ -65,13 +65,11 @@ module.exports = async function (context, req) {
             "operation": record[2]
         })
     })
-    
+    context.bindings.outputSbTopic = messages;
     context.res = {
         // status: 200, /* Defaults to 200 */
         body: {
-                "servicebusmessage": message,
-                "blobcontent": records,
-                "messages": messages
+                "servicebusmessages": messages,
         }
     };
 }

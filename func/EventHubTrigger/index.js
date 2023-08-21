@@ -8,13 +8,16 @@ const blobServiceClient = new BlobServiceClient(
   new DefaultAzureCredential()
 );
 
-async function streamToBuffer(readableStream) {
+async function streamToBuffer(readableStream, context) {
+    context.log("lets streamToBuffer")
     return new Promise((resolve, reject) => {
         const chunks = [];
         readableStream.on("data", (data) => {
+            context.log("onData")
             chunks.push(data instanceof Buffer ? data : Buffer.from(data));
         });
         readableStream.on("end", () => {
+            context.log("onEnd")
             resolve(Buffer.concat(chunks));
         });
         readableStream.on("error", reject);
@@ -36,7 +39,8 @@ module.exports = async function (context, eventHubMessages) {
             context.log(`Downloading ${blobName}`);
             const blobClient = containerClient.getBlobClient(blobName);
             const downloadResponse = await blobClient.download();
-            const downloaded = await streamToBuffer(downloadResponse.readableStreamBody);
+            context.log(downloadResponse)
+            const downloaded = await streamToBuffer(downloadResponse.readableStreamBody, context);
             context.log("Downloaded blob content:", downloaded.toString());
         }
     });

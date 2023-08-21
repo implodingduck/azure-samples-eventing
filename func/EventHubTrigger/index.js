@@ -29,18 +29,23 @@ module.exports = async function (context, eventHubMessages) {
    
     const containerClient = await blobServiceClient.getContainerClient("upload");
     const messages = []
-    await eventHubMessages.forEach(async (messageArr, index) => {
-        const message = messageArr[0]
-        context.log(`Processed message ${JSON.stringify(message)}`);
-        // if (message.data.url.indexOf("/upload/") > -1){
-        //     const blobName = message.data.url.split(`https://${accountName}.blob.core.windows.net/upload/`)[1]
-        //     context.log(`Downloading ${blobName}`);
-        //     const blobClient = containerClient.getBlobClient(blobName);
-        //     const downloadResponse = await blobClient.download();
-        //     context.log(downloadResponse)
-        //     const downloaded = await streamToBuffer(downloadResponse.readableStreamBody, context);
-        //     context.log("Downloaded blob content:", downloaded.toString());
-        // }
+    await eventHubMessages.forEach(async (messageStr, index) => {
+        const messageArr = JSON.parse(messageStr)
+        context.log(`This is messageArr ${messageArr}`);
+        await messageArr.forEach(async (message, index) => {
+            context.log(`Processed message ${JSON.stringify(message)}`);
+            
+            // if (message.data.url.indexOf("/upload/") > -1){
+            //     const blobName = message.data.url.split(`https://${accountName}.blob.core.windows.net/upload/`)[1]
+            //     context.log(`Downloading ${blobName}`);
+            //     const blobClient = containerClient.getBlobClient(blobName);
+            //     const downloadResponse = await blobClient.download();
+            //     context.log(downloadResponse)
+            //     const downloaded = await streamToBuffer(downloadResponse.readableStreamBody, context);
+            //     context.log("Downloaded blob content:", downloaded.toString());
+            // }
+        })
+        
     });
     if (messages.length > 0) {
         context.bindings.outputSbTopic = messages;

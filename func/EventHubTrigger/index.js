@@ -25,15 +25,21 @@ module.exports = async function (context, eventHubMessages) {
     context.log(`JavaScript eventhub trigger function called for message array ${eventHubMessages}`);
     const jsonMsg = JSON.parse(eventHubMessages)
     const containerClient = await blobServiceClient.getContainerClient("upload");
+    const messages = []
     jsonMsg.forEach(async (message, index) => {
         context.log(message.data)
         context.log(`Content Type = ${message.data.contentType}`)
-        context.log(`Processed message ${message}`);
-        const blobName = message.data.url.split(`https://${accountName}.blob.core.windows.net/upload/`)[1]
-        context.log(`Downloading ${blobName}`);
-        const blobClient = containerClient.getBlobClient(blobName);
-        const downloadResponse = await blobClient.download();
-        const downloaded = await streamToBuffer(downloadResponse.readableStreamBody);
-        console.log("Downloaded blob content:", downloaded.toString());
+        context.log(`Processed message ${JSON.stringify(message)}`);
+        if (message.data.url.indexOf("/upload/") > -1){
+            const blobName = message.data.url.split(`https://${accountName}.blob.core.windows.net/upload/`)[1]
+            context.log(`Downloading ${blobName}`);
+            const blobClient = containerClient.getBlobClient(blobName);
+            const downloadResponse = await blobClient.download();
+            const downloaded = await streamToBuffer(downloadResponse.readableStreamBody);
+            context.log("Downloaded blob content:", downloaded.toString());
+        }
     });
+    if (messages.length > 0) {
+        context.bindings.outputSbTopic = messages;
+    }
 };

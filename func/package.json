@@ -9,6 +9,7 @@
   "dependencies": {
     "@azure/identity": "^3.3.0",
     "@azure/storage-blob": "^12.15.0",
+    "csv-parse": "^5.4.0",
     "dotenv": "^16.3.1"
   }
 }

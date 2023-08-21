@@ -1,5 +1,6 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
 const { DefaultAzureCredential } = require('@azure/identity');
+const { parse } = require('csv-parse/sync')
 require('dotenv').config()
 
 const accountName = process.env.SANAME;
@@ -50,13 +51,18 @@ module.exports = async function (context, req) {
     const downloadResponse = await blobClient.download();
     context.log(downloadResponse)
     const downloaded = await streamToBuffer(downloadResponse.readableStreamBody, context);
-    context.log("Downloaded blob content:", downloaded.toString());
-
+    const blobcontent = downloaded.toString()
+    context.log(`Downloaded blob content: ${blobcontent}`);
+    const records = parse(blobcontent, {
+        delimiter: ',',
+        skip_empty_lines: true
+      })
+    
     context.res = {
         // status: 200, /* Defaults to 200 */
         body: {
                 "servicebusmessage": message,
-                "blobcontent": downloaded.toString()
+                "blobcontent": records
         }
     };
 }

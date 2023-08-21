@@ -30,10 +30,10 @@ module.exports = async function (context, eventHubMessages) {
    
     const containerClient = await blobServiceClient.getContainerClient("upload");
     const messages = []
-    await eventHubMessages.forEach(async (messageStr, index) => {
+    for(const messageStr of eventHubMessages){
         const messageArr = JSON.parse(messageStr)
         context.log(`This is messageArr ${messageArr}`);
-        await messageArr.forEach(async (message, index) => {
+        for(const message of messageArr){
             context.log(`${JSON.stringify(message)}`);
             
             if (message.data.url.indexOf("/upload/") > -1){
@@ -49,18 +49,17 @@ module.exports = async function (context, eventHubMessages) {
                     delimiter: ',',
                     skip_empty_lines: true
                 })
-                await records.forEach(async (record, index) => {
+                for(const record of records) {
                     context.log(`Record: ${record}`);
                     messages.push({
                         "v1": record[0],
                         "v2": record[1],
                         "operation": record[2]
                     })
-                })
+                }
             }
-        })
-        
-    });
+        }
+    }
     context.log(`Messages length: ${messages.length}`)
     if (messages.length > 0) {
         context.bindings.outputSbTopic = messages;

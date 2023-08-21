@@ -35,7 +35,7 @@ resource "azurerm_servicebus_subscription_rule" "sum" {
 
 resource "azurerm_servicebus_subscription_rule" "multiply" {
   name            = "rule-${local.func_name}-multiply"
-  subscription_id = azurerm_servicebus_subscription.sum.id
+  subscription_id = azurerm_servicebus_subscription.multiply.id
   filter_type     = "SqlFilter"
   sql_filter      = "operation = 'multiply'"
 }

@@ -2,8 +2,13 @@
   "name": "",
   "version": "",
   "description": "",
-  "scripts" : {
+  "scripts": {
     "test": "echo \"No tests yet...\""
   },
-  "author": ""
+  "author": "",
+  "dependencies": {
+    "@azure/identity": "^3.3.0",
+    "@azure/storage-blob": "^12.15.0",
+    "dotenv": "^16.3.1"
+  }
 }

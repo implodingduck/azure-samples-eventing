@@ -108,6 +108,7 @@ resource "azurerm_linux_function_app" "func" {
     "%SBTOPIC%"                       = azurerm_servicebus_topic.this.name
     "SBSUB"                           = "topic-sub-${local.func_name}"
     "%SBSUB%"                         = "topic-sub-${local.func_name}"
+    "SANAME"                          = azurerm_storage_account.this.name
   }
   lifecycle {
     ignore_changes = [

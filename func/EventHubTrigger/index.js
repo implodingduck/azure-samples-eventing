@@ -7,7 +7,7 @@ const blobServiceClient = new BlobServiceClient(
   `https://${accountName}.blob.core.windows.net`,
   new DefaultAzureCredential()
 );
-
+const containerClient = await blobServiceClient.getContainerClient("upload");
 
 async function streamToBuffer(readableStream) {
     return new Promise((resolve, reject) => {
@@ -25,13 +25,16 @@ async function streamToBuffer(readableStream) {
 module.exports = async function (context, eventHubMessages) {
     context.log(`JavaScript eventhub trigger function called for message array ${eventHubMessages}`);
     const jsonMsg = JSON.parse(eventHubMessages)
+   
+
+
     jsonMsg.forEach(async (message, index) => {
         context.log(message.data)
         context.log(`Content Type = ${message.data.contentType}`)
         context.log(`Processed message ${message}`);
-        const blobName = message.data.url.split(`https://${accountName}.blob.core.windows.net/`)[1]
+        const blobName = message.data.url.split(`https://${accountName}.blob.core.windows.net/upload/`)[1]
         context.log(`Downloading ${blobName}`);
-        const blobClient = blobServiceClient.getBlobClient(blobName);
+        const blobClient = containerClient.getBlobClient(blobName);
         const downloadResponse = await blobClient.download();
         const downloaded = await streamToBuffer(downloadResponse.readableStreamBody);
         console.log("Downloaded blob content:", downloaded.toString());

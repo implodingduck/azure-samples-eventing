@@ -61,6 +61,7 @@ module.exports = async function (context, eventHubMessages) {
         })
         
     });
+    context.log(`Messages length: ${messages.length}`)
     if (messages.length > 0) {
         context.bindings.outputSbTopic = messages;
     }

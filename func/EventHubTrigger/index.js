@@ -41,7 +41,7 @@ module.exports = async function (context, eventHubMessages) {
                 context.log(`Downloading ${blobName}`);
                 const blobClient = containerClient.getBlobClient(blobName);
                 const downloadResponse = await blobClient.download();
-                context.log(downloadResponse)
+                context.log("Download is done")
                 const downloaded = await streamToBuffer(downloadResponse.readableStreamBody, context);
                 const blobcontent = downloaded.toString()
                 context.log(`Downloaded blob content: ${blobcontent}`);

@@ -32,13 +32,11 @@ module.exports = async function (context, req) {
     message = [
         {
             "v1": 23,
-            "v2": 12,
-            "operation": "sum"
+            "v2": 12
         },
         {
             "v1": 32,
             "v2": 21,
-            "operation": "multiply"
         }
     ]
 
@@ -61,8 +59,7 @@ module.exports = async function (context, req) {
         context.log(`Record: ${record}`);
         messages.push({
             "v1": record[0],
-            "v2": record[1],
-            "operation": record[2]
+            "v2": record[1]
         })
     })
     context.bindings.outputSbTopic = messages;

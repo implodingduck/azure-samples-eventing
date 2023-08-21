@@ -53,8 +53,7 @@ module.exports = async function (context, eventHubMessages) {
                     context.log(`Record: ${record}`);
                     messages.push({
                         "v1": record[0],
-                        "v2": record[1],
-                        "operation": record[2]
+                        "v2": record[1]
                     })
                 }
             }

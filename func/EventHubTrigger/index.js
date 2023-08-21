@@ -23,10 +23,11 @@ async function streamToBuffer(readableStream) {
 
 module.exports = async function (context, eventHubMessages) {
     context.log(`JavaScript eventhub trigger function called for message array ${eventHubMessages}`);
-    const jsonMsg = JSON.parse(eventHubMessages)
+   
     const containerClient = await blobServiceClient.getContainerClient("upload");
     const messages = []
-    jsonMsg.forEach(async (message, index) => {
+    eventHubMessages.forEach(async (messageArr, index) => {
+        const message = messageArr[0]
         context.log(message.data)
         context.log(`Content Type = ${message.data.contentType}`)
         context.log(`Processed message ${JSON.stringify(message)}`);
